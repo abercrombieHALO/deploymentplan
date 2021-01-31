@@ -156,7 +156,7 @@ function droppable_tables(event, ui) {
 
 function sort_team_list_tables() {
 	tbl = $(this);
-	var sortOrder = ["S", "TC", "TS", "SSC", "TL", "NTSTL", "SC", "ATL", "2IC", "IEDOp", "IEDAsst", "MD", "DM", "INSTR", "MO", "Op", "DDH", "DDL", "DL", "DR", "Dr", "CLO", "CORE", "NTS", "MTT", "DS", "D", "MECH", "Int", "TRG", "RET", "WATCH", "VT"];
+	var sortOrder = ["S", "TC", "TS", "SSC", "TL", "NTSTL", "SC", "ATL", "2IC", "IEDOp", "IEDAsst", "Op", "MD", "DM", "INSTR", "MO", "DDH", "DDL", "DL", "DR", "Dr", "CLO", "CORE", "NTS", "MTT", "DS", "D", "MECH", "Int", "TRG", "RET", "WATCH", "VT"];
 	var arrData = $(this).find('tbody >tr:has(td)').get();
 	arrData.sort(function(a, b) {
 		// check their positions, and their priorit using sortOrder
