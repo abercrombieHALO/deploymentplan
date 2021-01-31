@@ -1,0 +1,45 @@
+<html>
+<head>
+<!-- original source: http://jsfiddle.net/83k9k/5/ -->
+<!--<script src="jquery/jquery-3.5.1.js"></script>-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!--<script src="jquery/jquery-ui-1.12.1/jquery-ui.js"></script>-->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!--<script src="jquery/sheetjs/dist/xlsx.full.min.js"></script>-->
+<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+
+
+<link rel="stylesheet" href="scripts/team_list_main_styles.css">
+<link rel="stylesheet" href="scripts/team_list_print_styles.css" media="print">
+
+</head>
+<body>
+<h3 id="printTitle"></h3>
+<div id="controls">
+	<form>
+	<label>Load previous:</label>
+	<input id = "inputFile" type="file" onchange="parseInputFile(this)" accept=".xlsx">
+	<input class="export spaceControl" type="button" value="Clear changes" onclick="clearChanges()">
+	<label class="export spaceControl">Save as:</label>
+	<input class="export" type="text" id="outputFilename">
+	<input class="export" type="button" value="Save" onclick="writeOutputFile()">
+	<input class="export" type="button" value="Print/Export as PDF" onclick="printPage()">
+	</form>
+</div>
+<hr>
+<div id="teamlist">
+
+</div>
+<div id="donors">
+</div>
+<div id="changes">
+</div>
+
+<script src="scripts/team_list_dragdrop_rows.js"></script>
+<script src="scripts/team_list_dragdrop_tables.js"></script>
+<script src="scripts/team_list_editdetails.js"></script>
+<script src="scripts/team_list_import_file.js"></script>
+<script src="scripts/team_list_export_file.js"></script>
+<style type="text/css" media="print" id="dynamicPrint"></style>
+</body>
+</html>

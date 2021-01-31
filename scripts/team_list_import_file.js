@@ -1,0 +1,631 @@
+$(document).ready(function() {
+	$(".export").hide();
+});
+
+// parse excel file (chosen by user) that contains the team list
+// <input type="file" onchange="parseInputFile(this)">
+function parseInputFile(inputElement) {
+  var files = inputElement.files || [];
+  if (!files.length) return;
+  var file = files[0];
+
+  $("#outputFilename").val(files[0].name);
+
+  var reader = new FileReader();
+  reader.onloadend = function(event) {
+    var arrayBuffer = reader.result;
+
+    var options = { type: 'array' };
+    workbook = XLSX.read(arrayBuffer, options);
+    var sheetNames = workbook.SheetNames;
+	
+	if (sheetNames.includes('staff_to_section') && sheetNames.includes('section_to_task')) {
+		
+		// clear any content already loaded
+		$("#teamlist").empty();
+		$("#changes").empty();
+		
+		// get section_to_task sheet from workbook
+		var stt_sheet = workbook.Sheets['section_to_task'];
+		var stt = XLSX.utils.sheet_to_json(stt_sheet);
+		var stt_headers = XLSX.utils.sheet_to_json(stt_sheet, {header: 1})[0];
+		
+		
+		/* // get array of headers to be displayed in deployment plan - not location/task/section, not beginning with "_"
+		// also store headers that won't be displayed, so they can be used on export
+		var display_headers = [];
+		for(header of stt_headers) {
+			var ignore = ['location', 'task', 'section'];
+			if (!(ignore.includes(header)) && !(header.startsWith("_"))) {
+				display_headers.push(header);
+			}
+			else {
+				
+			}
+		}
+		console.log(display_headers); */
+		
+		var locations = {};
+		var donors = [];
+		/* var donorTypes = {}; */
+		
+		
+		// get list of locations, tasks and sections from section_to_task sheet
+		for (i = 0; i < stt.length; i++) {
+			// check if this location is in locations, and add it with an empty dict if not
+			var newLocation = stt[i]['location'];
+			if (!Object.keys(locations).includes(newLocation)) {
+				locations[newLocation] = {};
+			};
+			// check if this task is in the locations dict, and add it with an empty dict if not
+			var newTask = stt[i]['task'];
+			if (!Object.keys(locations[newLocation]).includes(newTask)) {
+				locations[newLocation][newTask] = [];
+			};
+			// add the section to the task dict
+			var sectionName = stt[i]['section'];
+				// get other details to be displayed:
+			var newDonor = "";
+			if (Object.keys(stt[i]).includes('donor')) {
+				newDonor = stt[i]['donor'];
+				if(!donors.includes(newDonor)) {
+					donors.push(newDonor);
+				};
+			};
+			locations[newLocation][newTask].push({name: sectionName, donor: newDonor});
+		};
+		
+		// get staff_to_section sheet from workbook
+		var sts_sheet = workbook.Sheets['staff_to_section'];
+		var sts = XLSX.utils.sheet_to_json(sts_sheet);
+		
+		// get header row of staff_to_section sheet and remove "section" from index 0;
+		var sts_headers = XLSX.utils.sheet_to_json(sts_sheet, {header: 1})[0];
+		sts_headers = sts_headers.slice(1, sts_headers.length);
+		
+		sts_by_section = {}
+		for (row of sts) {
+			var section = row['section'];
+			if(!Object.keys(sts_by_section).includes(section)) {
+				sts_by_section[section] = [];
+			}
+			delete row.section;
+			sts_by_section[section].push(row);
+		}
+		
+		//  construct html tables from tasks object and staff_to_section data
+		for(loc in locations) {
+			location_html = $("<div />")
+				.prop('id', loc.replace(/ /g, '').toLowerCase())
+				.addClass("location")
+				.append($("<h1 />").text(loc))
+				.append($("<div />").addClass("locationFlex"));
+			
+			var tasks = locations[loc];
+			for(taskName in tasks) {
+				var task_html = $("<div />")
+					.addClass("tasktable")
+					.append($("<table />")
+						.append($("<thead />")
+							.append($("<tr />")
+								.append($("<th />")
+									.attr({ contenteditable: true })
+									.text(taskName)
+								)
+							)
+						)
+					)
+				;
+				var tbodyHTML = $("<tbody />");
+				
+				if(Object.keys(sts_by_section).includes(taskName)) {
+					tbodyHTML.append(section_html("Management", "", sts_headers, sts_by_section[taskName]));
+				};
+				for(section of tasks[taskName]) {
+					if(Object.keys(sts_by_section).includes(section['name'])) {
+						tbodyHTML.append(section_html(section['name'], section['donor'], sts_headers, sts_by_section[section['name']]));
+					} else {
+						tbodyHTML.append(section_html(section['name'], section['donor'], sts_headers, []));
+					};
+				};
+				task_html.children().append(tbodyHTML);
+				
+				location_html.children("div").append(task_html);
+			}
+			
+			$("#teamlist").append(location_html);		
+		}
+		
+		
+		// DRAG AND DROP
+		
+		// make sure all staff rows are draggable
+		$(".tasktable .childgrid tr").not(".section_th").draggable({
+			helper: draggable_rows
+		});
+		
+		// make sure all section tables are droppable
+		$(".tasktable .childgrid").droppable({
+			accept: ".draggable_tr",
+			drop: droppable_tables
+		});
+		
+		// make sure all section names are draggable
+		$("tr.sectionname").draggable({
+			helper: draggable_tables
+		});
+		
+		// make sure all team tables are droppable
+		$("div.tasktable > table").droppable({
+			accept: ".sectionname",
+			drop: droppable_tasktables
+		});
+		
+		// SORTING
+		
+		// sort all the section tables by position, sort order defined in sortOrder array
+		$(".tasktable table.childgrid").each(sort_team_list_tables);
+		
+		
+		// SIZING
+		
+		// ensure uniform column sizes, and team tables are wide enough to show content
+		var nColumns = parseInt($(".tasktable .childrow td").attr('colspan'));
+		var taskTableWidth = 0;
+		for (i=1; i < nColumns+1; i++) {
+			var colSelector = ".tasktable .childgrid tr td:nth-child("+i+")";
+			var maxColWidth = find_max_width(colSelector);
+			$(colSelector).width(maxColWidth);
+			taskTableWidth += maxColWidth;
+		};
+		$(".tasktable").width(taskTableWidth);
+		
+		// resize location divs
+		resizeLocationDivs();
+		
+		
+		/*
+		$(".locationFlex").css("display", "flex")
+			.css("flex-direction", "column")
+			.css("flex-wrap", "wrap");
+		*/
+			//display: flex;
+			//flex-direction: column;
+			//flex-wrap: wrap;
+		
+		// unhide the export form button and changes table
+		$(".export").show();
+		
+		/* // DONORS TABLES - works, but commented out because ideally the tables would be disaggregated by section type
+		// e.g. "Mech", "Manual", "CORE" etc
+		// This is tricky to do without adding in a "section_type" field to the input data, which then creates all sorts of problems
+	
+		// check if any donors were included
+		if (donors.length > 0) {
+			$("#donors").append($("<h1 />").text("DONORS"))
+			
+			// create table showing number of sections by donor
+			$("#donors").append($("<table />").attr("id", "donorcounts"));
+			// get all donor allocations
+			var allocatedDonors = get_text_array(".donor");
+			
+			// count by donor
+			var donorCounts = frequency_counts(allocatedDonors);
+			
+			// populate table
+			$("#donorcounts").append($("<tr />")
+				.append($("<td />").text("Donor"))
+				.append($("<td />").text("Count"))
+			);
+			for (donor of donors.sort()) {
+				$("#donorcounts").append($("<tr />")
+					.append($("<td />").text(donor).addClass(convert_donor_to_class(donor))
+					.append($("<td />").text(donorCounts[donor]))
+				)
+			};
+			
+			// create table showing donor for each section
+			$("#donors").append($("<table />").attr("id", "teamtodonor")
+				.append($("<tr />")
+					.append($("<td />").text("Section"))
+					.append($("<td />").text("Donor"))
+				)
+			);
+			var rowTotal = 20; // number of rows before wrapping
+			var headcopy = $("#teamtodonor tr").children().clone();
+			
+			// get each section, sort by section name, filter out "management", then add name and donor to the table
+			$(".sectionname").sort(function(a, b) {
+				// sort by section name. Section names are usually of the form "MAN12" or sometimes "MAN12 - XXX"
+				// first isolate the first alpha characters e.g. "MAN" and sort by that
+				// if there's a tie, isolate the numbers e.g. "12", convert to numeric and and sort by that
+				var aName = $(a).children(".sectionname_name").text() 
+				var bName = $(b).children(".sectionname_name").text()
+				aName = [aName.replace(/((\d)+[\D]*)/g,""), parseInt(aName.replace(/\D/g,"")) || 0] // "MAN20 - AM" -> ["MAN", "20"]
+				bName = [bName.replace(/((\d)+[\D]*)/g,""), parseInt(bName.replace(/\D/g,"")) || 0] // "MAN20 - AM" -> ["MAN", "20"]
+				if (aName[0] < bName[0]) {
+					return -1;
+				}
+				else if (aName[0] > bName[0]) {
+					return 1;
+				}
+				else {
+					return (aName[1] < bName[1]) ? -1 : (aName[1] > bName[1]) ? 1 : 0;
+				};
+			}).filter(function() {
+				// filter out "management" sections, if they exist
+				var name = $(this).children(".sectionname_name").text();
+				return name.toLowerCase() != "management";
+			}).each(function(index) {
+				var name = $(this).children(".sectionname_name").text();
+				var donor = $(this).children(".donor").text();
+				if(index < rowTotal) {
+					$("#teamtodonor").append($("<tr />")
+						.append($("<td />").text(name))
+						.append($("<td />").text(donor).addClass(convert_donor_to_class(donor))
+					);
+				}
+				else {
+					var row = (index % rowTotal) + 1;
+					if (row == 1) {
+						$("#teamtodonor").children().eq(0).append(headcopy.clone());
+					}
+					$("#teamtodonor").children().eq(row)
+						.append($("<td />").text(name))
+						.append($("<td />").text(donor).addClass(convert_donor_to_class(donor));
+				};
+			});
+			
+			
+		} */
+		
+		// DONOR CHANGES TABLE
+		$("#changes").append($("<h1 />").text("DONOR CHANGES"));
+		if (sheetNames.includes('donor_changes')) {
+			var donorchanges_sheet = workbook.Sheets['donor_changes'];
+			
+			// convert to html table and insert inside #changes div
+			options = { "header": "", "footer": "", "id": "donorchanges"};
+			var donorchanges_html = XLSX.utils.sheet_to_html(donorchanges_sheet, options);
+			
+			$("#changes").append(donorchanges_html);
+			
+			// remove XLSX-generated attributes
+			$("#donorchanges").find("td")
+				.removeAttr('id')
+				.removeAttr('t')
+				.removeAttr('v');
+				
+			// add classes for table cells
+			$("#donorchanges").find("tr").slice(1).each(function() {
+				var classes = ['section_name', 'fromdonor', 'todonor'];
+				
+				var row = $(this);
+				// add each class to each cell in turn
+				classes.forEach(function(colClass, i) {
+					row.children().eq(i).addClass(colClass);
+					if (colClass != "section_name") {
+						row.children().eq(i).addClass(convert_donor_to_class(row.children().eq(i).text()));
+					};
+				});
+			});
+						
+			// convert to json, loop through section names and update relevant donor with class "changeddonor"
+			var donorchanges_json = XLSX.utils.sheet_to_json(donorchanges_sheet);
+			for(row of donorchanges_json) {
+				var sec = row['section'].toString();
+				var changed = $(".sectionname_name").filter(function() { return ($(this).text() === sec) } );
+				changed.siblings(".donor").addClass("changeddonor");
+			}
+		}
+		else {
+			// add empty changes table
+			$("#changes").append("<table id='donorchanges'><tbody><tr><td>section</td><td>from</td><td>to</td></tr></tbody></table>");
+		}		
+		
+		// PERSONNEL CHANGES TABLE
+		$("#changes").append($("<h1 />").text("PERSONNEL CHANGES"));
+		
+		if (sheetNames.includes('personnel_changes')) {
+			var changes_sheet = workbook.Sheets['personnel_changes'];
+			
+			// convert to html table and insert inside #changes div
+			options = { "header": "", "footer": "", "id": "personnelchanges"};
+			var changes_html = XLSX.utils.sheet_to_html(changes_sheet, options);
+			
+			$("#changes").append(changes_html);
+			
+			// remove XLSX-generated attributes
+			$("#personnelchanges").find("td")
+				.removeAttr('id')
+				.removeAttr('t')
+				.removeAttr('v');
+				
+			// add classes for table cells
+			$("#personnelchanges").find("tr").slice(2).each(function() {
+				var classes = ['ins', 'pos', 'fromloc', 'fromtask', 'fromsec', 'toloc', 'totask', 'tosec', 'reason'];
+				
+				// if the first cell spans more than one column, remove the 'pos' from the classes array
+				var colspanAttr = $(this).children().first().attr('colspan');
+				if(typeof colspanAttr !== typeof undefined && colspanAttr !== false) {
+					classes.splice(1, 1);
+				};
+				
+				var row = $(this);
+				// add each class to each cell in turn
+				classes.forEach(function(colClass, i) {
+					row.children().eq(i).addClass(colClass);
+					if (colClass == "pos") {
+						row.children().eq(i).addClass(convert_pos_to_class(row.children().eq(i).text()));
+					}
+				});
+			});
+			
+			// make reason column contenteditable
+			$("#personnelchanges td.reason").attr("contenteditable", true);
+			
+			// convert to json, loop through ins. column and update relevant rows/tables with class "changed"
+			var changes_json = XLSX.utils.sheet_to_json(changes_sheet);
+			for(row of changes_json.slice(1, changes_json.length)) {
+				var ins = row['ins'].toString();
+				var changed = $("#teamlist td").filter(function() { return ($(this).text() === ins) } );
+				if (changed.parent().hasClass("sectionname")) {
+					changed.closest(".draggable_section").addClass("changed");
+				}
+				else {
+					changed.parent().addClass("changed");
+				}
+			}
+		}
+		else {
+			// add empty changes table
+			$("#changes").append("<table id='personnelchanges'><tbody><tr><td rowspan='2'>ins</td><td rowspan='2'>pos</td><td colspan='3'>From</td><td colspan='3'>To</td><td rowspan='2'>Reason</td></tr><tr><td>Location</td><td>Task</td><td>Section</td><td>Location</td><td>Task</td><td>Section</td></tr></tbody></table>");
+		}
+		
+		// POSITION CHANGES TABLE
+		$("#changes").append($("<h1 />").text("POSITION CHANGES"));
+		if (sheetNames.includes('pos_changes')) {
+			var poschanges_sheet = workbook.Sheets['pos_changes'];
+			
+			// convert to html table and insert inside #changes div
+			options = { "header": "", "footer": "", "id": "poschanges"};
+			var poschanges_html = XLSX.utils.sheet_to_html(poschanges_sheet, options);
+			
+			$("#changes").append(poschanges_html);
+			
+			// remove XLSX-generated attributes
+			$("#poschanges").find("td")
+				.removeAttr('id')
+				.removeAttr('t')
+				.removeAttr('v');
+				
+			// add classes for table cells
+			$("#poschanges").find("tr").slice(1).each(function() {
+				var classes = ['ins', 'frompos', 'topos', 'reason'];
+				
+				var row = $(this);
+				// add each class to each cell in turn
+				classes.forEach(function(colClass, i) {
+					row.children().eq(i).addClass(colClass);
+					if (colClass.includes('pos')) {
+						row.children().eq(i).addClass(convert_pos_to_class(row.children().eq(i).text()));
+					};
+				});
+			});
+						
+			// convert to json, loop through section names and update relevant donor with class "changeddonor"
+			var poschanges_json = XLSX.utils.sheet_to_json(poschanges_sheet);
+			for(row of poschanges_json) {
+				var ins = row['ins'].toString();
+				var changed = $("#teamlist .ins").filter(function() { return ($(this).text() === ins) } );
+				changed.siblings(".pos").addClass("changedpos");
+			}
+		}
+		else {
+			// add empty changes table
+			$("#changes").append("<table id='poschanges'><tbody><tr><td>ins</td><td>from</td><td>to</td><td>reason</td></tr></tbody></table>");
+		}	
+		
+	} else {
+		console.log("Error - excel file does not have requisite sheets");
+	}
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function resizeLocationDivs() {
+	// set widths for location divs
+	$(".location").each(function() {
+		// pixel:cm from https://www.w3.org/Style/Examples/007/units.en.html
+		var cmPerPixel = 0.0264583;
+		
+		// set heights
+		var outerHeights = [];
+		var maxHeight = 0;
+		$(this).children("div").children().each(function() {
+			maxHeight = Math.max(maxHeight, $(this).outerHeight());
+			outerHeights.push($(this).outerHeight(true));
+		})
+		var locationHeight = maxHeight + $(this).children("h1").outerHeight(true);
+		$(this).height(locationHeight);
+		
+		// calculate height scaling for printing
+		// pixel:cm from https://www.w3.org/Style/Examples/007/units.en.html
+		var locHeightCM = locationHeight * cmPerPixel;
+		var pageHeightCM = 19;
+		var heightRatio = 1;
+		if(pageHeightCM < locHeightCM) {
+			heightRatio = pageHeightCM / locHeightCM;
+		}
+		else {
+			$(this).height(pageHeightCM / cmPerPixel);
+		};
+		
+		var locationFlexHeight = $(this).height() - $(this).children("h1").outerHeight(true) + 20;
+		$(this).children("div").height(locationFlexHeight);
+		
+		// work out how many flexbox columns there are
+		var nCols = 1;
+		var cumHeight = 0;
+		for(height of outerHeights) {
+			cumHeight += height;
+			if (cumHeight > locationFlexHeight) {
+				nCols += 1;
+				cumHeight = height;
+			}
+		};
+		
+		// set widths
+		//var nTeamTables = $(this).children("div").children().length;
+		var locationWidth = nCols * $(".tasktable").outerWidth(true);
+		$(this).width(locationWidth);
+		
+		// calculate width scaling for printing
+		var locWidthCM = locationWidth * cmPerPixel;
+		var pageWidthCM = 25;
+		var widthRatio = 1;
+		if(pageWidthCM < locWidthCM) {
+			widthRatio = pageWidthCM / locWidthCM;
+		};
+		
+		var ratio = widthRatio;
+		if (widthRatio > heightRatio) {
+			ratio = heightRatio;
+		};
+
+		var style = '#'+$(this).prop("id")+' {zoom: '+ratio+'; -moz-transform: scale('+ratio+');}';
+		$("#dynamicPrint").text($("#dynamicPrint").text() + style);
+	});
+};
+
+function section_row_html(rowData, headers = []) {
+	var result = $("<tr />");
+	if (headers.length === 0) {
+		result.addClass("section_th");
+		for(header of rowData) {
+			result.append($("<td />").text(header));
+		};
+	} else {
+		result.addClass("draggable_tr");
+		for (header of headers) {
+			// e.g. "name"
+			var value = rowData[header]; // e.g. "Mohammed Abdirahman"
+			var tdClass = header.toLowerCase();
+			if(tdClass == "pos") {
+				tdClass = tdClass + " " + convert_pos_to_class(value); // e.g. "pos twoic"
+				result.append($("<td />")
+					.addClass(tdClass)
+					.attr("contenteditable", "true")
+					.attr("onClick", "$(this).focus();")
+					.text(value)
+				);
+			}
+			else {
+				result.append($("<td />")
+					.addClass(tdClass)
+					.text(value)
+				);
+			}
+		}
+	}
+	return result;	
+}
+
+function section_html(sectionName, donor, headers, rowsArray ) {
+	var childgridTable = $("<table />").addClass("childgrid")
+		.append($("<tbody />")
+			.append(section_row_html(headers))
+		)
+	;
+	
+	for(rowData of rowsArray) {
+		childgridTable.children().append(section_row_html(rowData, headers));
+	};	
+	
+	var sectionNameRow = $("<tr />").addClass("sectionname")
+		.append($("<td />").text(sectionName).addClass("sectionname_name"));
+	if (donor !== "") {
+		var donorClass = convert_donor_to_class(donor);
+		sectionNameRow.append($("<td />")
+			.text(donor).addClass("donor "+donorClass)
+			.attr("contenteditable", "true")
+			.attr("onClick", "$(this).focus();")
+		);
+	}
+	
+	var result = $("<tr />").addClass("draggable_section")
+		.append($("<td />").attr({ colspan: headers.length })
+			.append($("<table />").addClass("section")
+				.append($("<tbody />").append(sectionNameRow)
+					.append($("<tr />").addClass("childrow")
+						.append($("<td />").attr({ colspan: headers.length })
+							.append(childgridTable)
+						)
+					)
+				)
+			)
+		)
+	;
+	
+	return result;
+}
+
+
+function find_max_width(id) {
+    var maxWidth = 0;
+
+    $(id).each(function (index) {
+		var currentWidth = parseInt($(this).width(), 10);
+		if (currentWidth > maxWidth) {
+			maxWidth = currentWidth;
+		};
+	});
+	
+    return maxWidth;
+}
+
+function find_max_height(id) {
+	var maxHeight = 0;
+
+    $(id).each(function (index) {
+		var currentHeight = parseInt($(this).height(), 10);
+		if (currentHeight > maxHeight) {
+			maxHeight = currentHeight;
+		};
+	});
+	
+    return maxHeight;
+}
+
+function frequency_counts(arr) {
+	var freqObj = {};
+	for(i of arr) {
+		if(Object.keys(freqObj).includes(i)) {
+			freqObj[i] += 1;
+		}
+		else {
+			freqObj[i] = 1;
+		}
+	}
+	return freqObj;
+};
+
+function get_text_array(sel) {
+	return $(sel).map(function(){
+               return $.trim($(this).text());
+            }).get();
+};
+
+function convert_pos_to_class(pos) {
+	if(pos.startsWith("2")) { // e.g. "2ic"
+		return "two" + pos.slice(1).toLowerCase(); // e.g. "twoic"
+	}
+	else { // e.g. "SSC"
+		return pos.toLowerCase(); // e.g. "ssc"
+	}
+};
+
+function convert_donor_to_class(donor) {
+	// e.g. donor = "N61 (UNMAS RAM)"
+	return donor.split(" ")[0].toLowerCase() // e.g. "n61"
+}

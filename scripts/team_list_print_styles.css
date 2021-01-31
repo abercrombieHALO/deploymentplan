@@ -1,0 +1,21 @@
+@page {
+	size: landscape;
+}
+
+body {
+	-webkit-print-color-adjust: exact !important;
+	color-adjust: exact !important;
+	print-color-adjust: exact !important;
+}
+
+#controls {
+	display: none;
+}
+
+.location {
+	break-after: page;
+}
+
+#printTitle {
+	display: block;
+}
