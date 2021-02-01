@@ -136,6 +136,35 @@ function parseInputFile(inputElement) {
 			$("#teamlist").append(location_html);		
 		}
 		
+		// FORMATTING STYLE FOR DONORS AND POSITIONS
+		if (sheetNames.includes('formatting')) {
+			var formatting_sheet = workbook.Sheets['formatting'];
+			var formatting_json = XLSX.utils.sheet_to_json(formatting_sheet);
+			console.log(formatting_json);
+			for(row of formatting_json) {
+				var classType = row['type'];
+				var className = row['name'];
+				var bgColor = row['background-color'];
+				var textColor = row['text-color'];
+				if (classType == "donor") {
+					className = convert_donor_to_class(className);
+				}
+				else if (classType == "position") {
+					className = convert_pos_to_class(className);
+				}
+				else {
+					console.log("Unknown classType: "+classType);
+				}
+				// get a style sheet from the same domain, or inline
+				var cssSheet = Array.from(document.styleSheets).filter(
+					(sheet) => !sheet.href || sheet.href.startsWith(window.location.origin);
+				)[0];
+				var bgColor = (bgColor == "") ? bgColor : "background-color: " + bgColor + ";";
+				var textColor = (textColor == "") ? textColor : "color: " + textColor + ";";
+				cssSheet.insertRule("."+className+" { "+bgColor+" "+textColor+" }", cssSheet.cssRules.length);
+			}
+		}
+		
 		
 		// DRAG AND DROP
 		
