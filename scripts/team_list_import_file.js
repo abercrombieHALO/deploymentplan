@@ -157,6 +157,7 @@ function parseInputFile(inputElement) {
 				}
 				// get a stylesheet from the same domain, or inline
 				var cssSheet = Array.from(document.styleSheets).filter((sheet) => !sheet.href || sheet.href.startsWith(window.location.origin));
+				cssSheet = cssSheet[0];
 				
 				// insert new rule into stylesheet
 				var bgColor = (bgColor == "") ? bgColor : "background-color: " + bgColor + ";";
