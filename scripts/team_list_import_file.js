@@ -140,7 +140,7 @@ function parseInputFile(inputElement) {
 		if (sheetNames.includes('formatting')) {
 			var formatting_sheet = workbook.Sheets['formatting'];
 			var formatting_json = XLSX.utils.sheet_to_json(formatting_sheet);
-			console.log(formatting_json);
+			
 			for(row of formatting_json) {
 				var classType = row['type'];
 				var className = row['name'];
@@ -155,9 +155,10 @@ function parseInputFile(inputElement) {
 				else {
 					console.log("Unknown classType: "+classType);
 				}
-				// get a style sheet from the same domain, or inline
+				// get a stylesheet from the same domain, or inline
 				var cssSheet = Array.from(document.styleSheets).filter((sheet) => !sheet.href || sheet.href.startsWith(window.location.origin));
 				
+				// insert new rule into stylesheet
 				var bgColor = (bgColor == "") ? bgColor : "background-color: " + bgColor + ";";
 				var textColor = (textColor == "") ? textColor : "color: " + textColor + ";";
 				cssSheet.insertRule("."+className+" { "+bgColor+" "+textColor+" }", cssSheet.cssRules.length);
