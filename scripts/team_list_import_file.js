@@ -137,6 +137,7 @@ function parseInputFile(inputElement) {
 		}
 		
 		// FORMATTING STYLE FOR DONORS AND POSITIONS
+		positionSortOrder = [];
 		if (sheetNames.includes('formatting')) {
 			var formatting_sheet = workbook.Sheets['formatting'];
 			var formatting_json = XLSX.utils.sheet_to_json(formatting_sheet);
@@ -150,6 +151,7 @@ function parseInputFile(inputElement) {
 					className = convert_donor_to_class(className);
 				}
 				else if (classType == "position") {
+					positionSortOrder.push(className);
 					className = convert_pos_to_class(className);
 				}
 				else {
