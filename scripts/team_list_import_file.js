@@ -156,9 +156,8 @@ function parseInputFile(inputElement) {
 					console.log("Unknown classType: "+classType);
 				}
 				// get a style sheet from the same domain, or inline
-				var cssSheet = Array.from(document.styleSheets).filter(
-					(sheet) => !sheet.href || sheet.href.startsWith(window.location.origin)
-				)[0];
+				var cssSheet = Array.from(document.styleSheets).filter((sheet) => !sheet.href || sheet.href.startsWith(window.location.origin));
+				
 				var bgColor = (bgColor == "") ? bgColor : "background-color: " + bgColor + ";";
 				var textColor = (textColor == "") ? textColor : "color: " + textColor + ";";
 				cssSheet.insertRule("."+className+" { "+bgColor+" "+textColor+" }", cssSheet.cssRules.length);
