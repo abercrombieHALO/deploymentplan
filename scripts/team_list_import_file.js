@@ -24,6 +24,7 @@ function parseInputFile(inputElement) {
 		// clear any content already loaded
 		$("#teamlist").empty();
 		$("#changes").empty();
+		$("#donors").empty();
 		
 		// get section_to_task sheet from workbook
 		var stt_sheet = workbook.Sheets['section_to_task'];
@@ -167,7 +168,6 @@ function parseInputFile(inputElement) {
 				cssSheet.insertRule("."+className+" { "+bgColor+" "+textColor+" }", cssSheet.cssRules.length);
 			}
 		}
-		
 		
 		// DRAG AND DROP
 		
@@ -363,52 +363,11 @@ function parseInputFile(inputElement) {
 			};
 		}
 		
-		// DONOR CHANGES TABLE
-		$("#changes").append($("<h1 />").text("DONOR CHANGES"));
-		if (sheetNames.includes('donor_changes')) {
-			var donorchanges_sheet = workbook.Sheets['donor_changes'];
-			
-			// convert to html table and insert inside #changes div
-			options = { "header": "", "footer": "", "id": "donorchanges"};
-			var donorchanges_html = XLSX.utils.sheet_to_html(donorchanges_sheet, options);
-			
-			$("#changes").append(donorchanges_html);
-			
-			// remove XLSX-generated attributes
-			$("#donorchanges").find("td")
-				.removeAttr('id')
-				.removeAttr('t')
-				.removeAttr('v');
-				
-			// add classes for table cells
-			$("#donorchanges").find("tr").slice(1).each(function() {
-				var classes = ['section_name', 'fromdonor', 'todonor'];
-				
-				var row = $(this);
-				// add each class to each cell in turn
-				classes.forEach(function(colClass, i) {
-					row.children().eq(i).addClass(colClass);
-					if (colClass != "section_name") {
-						row.children().eq(i).addClass(convert_donor_to_class(row.children().eq(i).text()));
-					};
-				});
-			});
-						
-			// convert to json, loop through section names and update relevant donor with class "changeddonor"
-			var donorchanges_json = XLSX.utils.sheet_to_json(donorchanges_sheet);
-			for(row of donorchanges_json) {
-				var sec = row['section'].toString();
-				var changed = $(".sectionname_name").filter(function() { return ($(this).text() === sec) } );
-				changed.siblings(".donor").addClass("changeddonor");
-			}
-		}
-		else {
-			// add empty changes table
-			$("#changes").append("<table id='donorchanges'><tbody><tr><td>section</td><td>from</td><td>to</td></tr></tbody></table>");
-		}		
+		// CHANGES
+		$("#changes").append($("<h1 />").text("CHANGELOG"));
 		
 		// PERSONNEL CHANGES TABLE
-		$("#changes").append($("<h1 />").text("PERSONNEL CHANGES"));
+		$("#changes").append($("<h2 />").text("PERSONNEL CHANGES"));
 		
 		if (sheetNames.includes('personnel_changes')) {
 			var changes_sheet = workbook.Sheets['personnel_changes'];
@@ -467,7 +426,7 @@ function parseInputFile(inputElement) {
 		}
 		
 		// POSITION CHANGES TABLE
-		$("#changes").append($("<h1 />").text("POSITION CHANGES"));
+		$("#changes").append($("<h2 />").text("POSITION CHANGES"));
 		if (sheetNames.includes('pos_changes')) {
 			var poschanges_sheet = workbook.Sheets['pos_changes'];
 			
@@ -508,7 +467,52 @@ function parseInputFile(inputElement) {
 		else {
 			// add empty changes table
 			$("#changes").append("<table id='poschanges'><tbody><tr><td>ins</td><td>from</td><td>to</td><td>reason</td></tr></tbody></table>");
-		}	
+		}
+		
+		// DONOR CHANGES TABLE
+		$("#changes").append($("<h2 />").text("DONOR CHANGES"));
+		if (sheetNames.includes('donor_changes')) {
+			var donorchanges_sheet = workbook.Sheets['donor_changes'];
+			
+			// convert to html table and insert inside #changes div
+			options = { "header": "", "footer": "", "id": "donorchanges"};
+			var donorchanges_html = XLSX.utils.sheet_to_html(donorchanges_sheet, options);
+			
+			$("#changes").append(donorchanges_html);
+			
+			// remove XLSX-generated attributes
+			$("#donorchanges").find("td")
+				.removeAttr('id')
+				.removeAttr('t')
+				.removeAttr('v');
+				
+			// add classes for table cells
+			$("#donorchanges").find("tr").slice(1).each(function() {
+				var classes = ['section_name', 'fromdonor', 'todonor'];
+				
+				var row = $(this);
+				// add each class to each cell in turn
+				classes.forEach(function(colClass, i) {
+					row.children().eq(i).addClass(colClass);
+					if (colClass != "section_name") {
+						row.children().eq(i).addClass(convert_donor_to_class(row.children().eq(i).text()));
+					};
+				});
+			});
+						
+			// convert to json, loop through section names and update relevant donor with class "changeddonor"
+			var donorchanges_json = XLSX.utils.sheet_to_json(donorchanges_sheet);
+			for(row of donorchanges_json) {
+				var sec = row['section'].toString();
+				var changed = $(".sectionname_name").filter(function() { return ($(this).text() === sec) } );
+				changed.siblings(".donor").addClass("changeddonor");
+			}
+		}
+		else {
+			// add empty changes table
+			$("#changes").append("<table id='donorchanges'><tbody><tr><td>section</td><td>from</td><td>to</td></tr></tbody></table>");
+		}		
+				
 		
 	} else {
 		console.log("Error - excel file does not have requisite sheets");
