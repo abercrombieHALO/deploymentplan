@@ -1,7 +1,12 @@
 // DONOR EDITING
 
 // when user clicks donor (focus)
-$(document).on("focus", "td.donor", function() {
+// use .one() instead of .on() because otherwise use can click multiple times and keep
+// subtracting 1 from the donor summary table
+// event is rebound on blur (see below)
+$(document).one("focus", "td.donor", donor_focus);
+
+function donor_focus() {
 	// check if this section is already listed in the donor changes table
 	var changedSections = $("#donorchanges td.section_name").map(function() {
 		return $(this).text();
@@ -25,7 +30,20 @@ $(document).on("focus", "td.donor", function() {
 			)
 		)
 	}
-});
+	
+	// subtract 1 from relevant cell of donor summary table
+	var secType = extract_section_type(thisSection);
+	var secTypeCol = $("#donorcounts td").filter(function() {
+			return $(this).text() == secType;
+		}).index();
+	if(fromDonor == "") {
+		fromDonor = "Unallocated";
+	}
+	var countCell = $("#donorcounts tr").filter(function() {
+		return $(this).children().eq(0).text() === fromDonor;
+	}).children().eq(secTypeCol);
+	countCell.text(parseInt(countCell.text())-1);
+};
 
 // as the user types
 $(document).on("input", ".donor", function() {
@@ -40,19 +58,36 @@ $(document).on("blur", ".donor", function() {
 	// get the new donor
 	var newDonor = $(this).text();
 	
-	// get the old donor
+	// get the section name and type
 	var thisSection = $(this).siblings(".sectionname_name").text();
+	var secType = extract_section_type(thisSection);
+	
+	// get the old donor
 	var tableRow = $("#donorchanges tr")
 			.filter(function() {
 				return $(this).children(".section_name").text() == thisSection
 			})
 	var oldDonor = tableRow.children(".fromdonor").text();
 	
+	// get the cell of the relevant donor by section table
+	var ttodCell = $("#ttod-"+secType+" td").filter(function() {
+		return $(this).text() == thisSection;
+	});
+	
+	// update the donor of the donor by section table
+	ttodCell.next()
+		.text(newDonor)
+		.removeClass()
+		.addClass(convert_donor_to_class(newDonor))
+	
 	// compare the new to the old
 	if(newDonor === oldDonor) {
 		// if they're the same, delete the row from the table, and remove the "changeddonor" class
 		tableRow.remove();
 		$(this).removeClass("changeddonor");
+		
+		// remove changed class from donor by section table
+		ttodCell.removeClass("changed");
 	}
 	else {
 		// if they're different, add the "changeddonor" class, and update the "to" column in the table
@@ -60,10 +95,46 @@ $(document).on("blur", ".donor", function() {
 			.text(newDonor)
 			.addClass(convert_donor_to_class(newDonor));
 		$(this).addClass("changeddonor");
+		
+		// add changed class to donor by section table
+		ttodCell.addClass("changed")
 	}
 	
 	// deselect any sections that have accidentally been selected
 	$(".selectedSection").removeClass("selectedSection");
+	
+	// add 1 to the relevant cell of the donor summary table (add a new row if necessary)
+	var secTypeCol = $("#donorcounts td").filter(function() {
+			return $(this).text() == secType;
+		}).index();
+	if(newDonor == "") {
+		newDonor = "Unallocated";
+	}
+	var donorRow = $("#donorcounts tr").filter(function() {
+		return $(this).children().eq(0).text() === newDonor;
+	});
+	// add a new row if necessary
+	if (donorRow.length === 0) {
+		// add a new row to the table for this donor
+		$("#donorcounts tr").eq(-3).after(
+			$("<tr />").append($("<td />")
+				.text(newDonor)
+				.addClass(convert_donor_to_class(newDonor))
+			)
+		);
+		donorRow = $("#donorcounts tr").filter(function() {
+			return $(this).children().eq(0).text() === newDonor;
+		});
+		console.log($("#donorcounts tr").eq(0).children().length - 1);
+		for(var i = 0; i < $("#donorcounts tr").eq(0).children().length - 1; i++) {
+			donorRow.append($("<td />").text(0));
+		}
+	}
+	var countCell = donorRow.children().eq(secTypeCol);
+	countCell.text(parseInt(countCell.text())+1);
+	
+	// rebind the focus event
+	$(document).one("focus", "td.donor", donor_focus);
 });
 
 // POSITION EDITING
