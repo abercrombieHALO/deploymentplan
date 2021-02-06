@@ -228,88 +228,140 @@ function parseInputFile(inputElement) {
 		// unhide the export form button and changes table
 		$(".export").show();
 		
-		/* // DONORS TABLES - works, but commented out because ideally the tables would be disaggregated by section type
-		// e.g. "Mech", "Manual", "CORE" etc
-		// This is tricky to do without adding in a "section_type" field to the input data, which then creates all sorts of problems
+		// DONORS TABLES
 	
 		// check if any donors were included
 		if (donors.length > 0) {
 			$("#donors").append($("<h1 />").text("DONORS"))
+				.append($("<h2 />").text("Summary"));
 			
 			// create table showing number of sections by donor
 			$("#donors").append($("<table />").attr("id", "donorcounts"));
-			// get all donor allocations
-			var allocatedDonors = get_text_array(".donor");
 			
-			// count by donor
-			var donorCounts = frequency_counts(allocatedDonors);
-			
-			// populate table
-			$("#donorcounts").append($("<tr />")
-				.append($("<td />").text("Donor"))
-				.append($("<td />").text("Count"))
-			);
-			for (donor of donors.sort()) {
-				$("#donorcounts").append($("<tr />")
-					.append($("<td />").text(donor).addClass(convert_donor_to_class(donor))
-					.append($("<td />").text(donorCounts[donor]))
-				)
-			};
-			
-			// create table showing donor for each section
-			$("#donors").append($("<table />").attr("id", "teamtodonor")
-				.append($("<tr />")
-					.append($("<td />").text("Section"))
-					.append($("<td />").text("Donor"))
-				)
-			);
-			var rowTotal = 20; // number of rows before wrapping
-			var headcopy = $("#teamtodonor tr").children().clone();
-			
-			// get each section, sort by section name, filter out "management", then add name and donor to the table
-			$(".sectionname").sort(function(a, b) {
-				// sort by section name. Section names are usually of the form "MAN12" or sometimes "MAN12 - XXX"
-				// first isolate the first alpha characters e.g. "MAN" and sort by that
-				// if there's a tie, isolate the numbers e.g. "12", convert to numeric and and sort by that
-				var aName = $(a).children(".sectionname_name").text() 
-				var bName = $(b).children(".sectionname_name").text()
-				aName = [aName.replace(/((\d)+[\D]*)/g,""), parseInt(aName.replace(/\D/g,"")) || 0] // "MAN20 - AM" -> ["MAN", "20"]
-				bName = [bName.replace(/((\d)+[\D]*)/g,""), parseInt(bName.replace(/\D/g,"")) || 0] // "MAN20 - AM" -> ["MAN", "20"]
-				if (aName[0] < bName[0]) {
-					return -1;
-				}
-				else if (aName[0] > bName[0]) {
-					return 1;
-				}
-				else {
-					return (aName[1] < bName[1]) ? -1 : (aName[1] > bName[1]) ? 1 : 0;
-				};
-			}).filter(function() {
-				// filter out "management" sections, if they exist
-				var name = $(this).children(".sectionname_name").text();
-				return name.toLowerCase() != "management";
-			}).each(function(index) {
-				var name = $(this).children(".sectionname_name").text();
-				var donor = $(this).children(".donor").text();
-				if(index < rowTotal) {
-					$("#teamtodonor").append($("<tr />")
-						.append($("<td />").text(name))
-						.append($("<td />").text(donor).addClass(convert_donor_to_class(donor))
-					);
-				}
-				else {
-					var row = (index % rowTotal) + 1;
-					if (row == 1) {
-						$("#teamtodonor").children().eq(0).append(headcopy.clone());
+			var sectionTypes = [];
+			var allocationCounts = {};
+			// get counts of all donor allocations disaggregated by section type
+			$(".donor").each(function() {
+				var donor = $(this).text();
+				var secType = $(this).siblings(".sectionname_name").text();
+				secType = extract_section_type(secType);
+				
+				if(sectionTypes.includes(secType)) {
+					// if this is a previously seen section type:
+					if(Object.keys(allocationCounts[secType]).includes(donor)) {
+						allocationCounts[secType][donor] += 1;
 					}
-					$("#teamtodonor").children().eq(row)
-						.append($("<td />").text(name))
-						.append($("<td />").text(donor).addClass(convert_donor_to_class(donor));
-				};
+					else {
+						allocationCounts[secType][donor] = 1;
+					}
+					allocationCounts[secType]["allocated"] += 1;
+				}
+				else {
+					// if this is a new section type:
+					sectionTypes.push(secType);
+					allocationCounts[secType] = {};
+					allocationCounts[secType][donor] = 1;
+					allocationCounts[secType]["allocated"] = 1;
+				}
 			});
 			
+			// count all section types (even those without donors)
+			var secTypeFrequency = get_section_types(".sectionname_name");
+			secTypeFrequency = frequency_counts(secTypeFrequency);
+			for(secType of sectionTypes) {
+				allocationCounts[secType]["Total"] = secTypeFrequency[secType];
+				allocationCounts[secType]["Unallocated"] = secTypeFrequency[secType] - allocationCounts[secType]["allocated"];
+			}
 			
-		} */
+			// populate table
+			$("#donorcounts").append($("<tr />").append($("<td />").text("Donor")));
+			for(col of sectionTypes) {
+				$("#donorcounts tr").append($("<td />").text(col));
+			};
+			
+			for (donor of donors.sort()) {
+				var donorRow = $("<tr />").append($("<td />").text(donor).addClass(convert_donor_to_class(donor)));
+				for (secType of sectionTypes) {
+					var count = 0;
+					if (Object.keys(allocationCounts[secType]).includes(donor)) {
+						count = allocationCounts[secType][donor];
+					}
+					donorRow.append($("<td />").text(count));
+				}
+				$("#donorcounts").append(donorRow);
+			};
+			$("#donorcounts")
+				.append($("<tr />").addClass("unallocated").append($("<td />").text("Unallocated")))
+				.append($("<tr />").addClass("totals").append($("<td />").text("Total")))
+			for (secType of sectionTypes) {
+				$("#donorcounts .unallocated").append($("<td />").text(allocationCounts[secType]["Unallocated"]));
+				$("#donorcounts .totals").append($("<td />").text(allocationCounts[secType]["Total"]));
+			}
+			
+			$("#donors").append($("<h2 />").text("By Section"))
+				.append($("<div />").addClass("donorFlex"));
+			
+			// create table for each secType showing donor for each section
+			for(secType of sectionTypes) {
+				var tableID = "ttod-"+secType.replace(/([^A-Z])/g,"");
+				$(".donorFlex").append($("<table />").attr("id", tableID).addClass("teamtodonor")
+					.append($("<tr />")
+						.append($("<td />").text("Section"))
+						.append($("<td />").text("Donor"))
+					)
+				);
+				var rowTotal = 20; // number of rows before wrapping
+				var headcopy = $("#"+tableID+" tr").children().clone();
+			
+				// get each section, sort by section name, filter out "management", then add name and donor to the table
+				$(".sectionname").sort(function(a, b) {
+					// sort by section name. Section names are usually of the form "MAN12" or sometimes "MAN12 - XXX"
+					// first isolate the first alpha characters e.g. "MAN" and sort by that
+					// if there's a tie, isolate the numbers e.g. "12", convert to numeric and and sort by that
+					var aName = $(a).children(".sectionname_name").text() 
+					var bName = $(b).children(".sectionname_name").text()
+					aName = [aName.replace(/((\d)+[\D]*)/g,""), parseInt(aName.replace(/\D/g,"")) || 0] // "MAN20 - AM" -> ["MAN", "20"]
+					bName = [bName.replace(/((\d)+[\D]*)/g,""), parseInt(bName.replace(/\D/g,"")) || 0] // "MAN20 - AM" -> ["MAN", "20"]
+					if (aName[0] < bName[0]) {
+						return -1;
+					}
+					else if (aName[0] > bName[0]) {
+						return 1;
+					}
+					else {
+						return (aName[1] < bName[1]) ? -1 : (aName[1] > bName[1]) ? 1 : 0;
+					};
+				}).filter(function() {
+					// filter out "management" sections, if they exist
+					//var name = $(this).children(".sectionname_name").text();
+					//return name.toLowerCase() != "management";
+
+					// filter for section types that have at least one donor (ie. they're in "sectionTypes")
+					//return sectionTypes.includes(extract_section_type($(this).children(".sectionname_name").text()));
+					
+					// filter for sections that are this section type
+					return extract_section_type($(this).children(".sectionname_name").text()) === secType;
+				}).each(function(index) {
+					var name = $(this).children(".sectionname_name").text();
+					var donor = $(this).children(".donor").text();
+					if(index < rowTotal) {
+						$("#"+tableID).append($("<tr />")
+							.append($("<td />").text(name))
+							.append($("<td />").text(donor).addClass(convert_donor_to_class(donor)))
+						);
+					}
+					else {
+						var row = (index % rowTotal) + 1;
+						if (row == 1) {
+							$("#"+tableID).children().eq(0).append(headcopy.clone());
+						}
+						$("#"+tableID).children().eq(row)
+							.append($("<td />").text(name))
+							.append($("<td />").text(donor).addClass(convert_donor_to_class(donor)));
+					};
+				});
+			};
+		}
 		
 		// DONOR CHANGES TABLE
 		$("#changes").append($("<h1 />").text("DONOR CHANGES"));
@@ -647,6 +699,21 @@ function get_text_array(sel) {
                return $.trim($(this).text());
             }).get();
 };
+
+
+function get_section_types(sel) {
+	return $(sel).map(function(){
+		var secType = $.trim($(this).text())
+		secType = extract_section_type(secType);
+        return secType;
+    }).get();
+};
+
+function extract_section_type(secName) {
+	var secType = secName.replace(/((\d)+[\D]*)/g,"");
+	return secType.replace(/[ -]/g,"");
+}
+
 
 function convert_pos_to_class(pos) {
 	if(pos.startsWith("2")) { // e.g. "2ic"

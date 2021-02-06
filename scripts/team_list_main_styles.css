@@ -131,6 +131,21 @@ td.changeddonor {
   border: 1px solid yellow;
 }
 
+/* Donor tables */
+
+.donorFlex {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	align-content: flex-start;
+}
+
+.teamtodonor {
+	margin-right: 25px;
+	margin-bottom: 10px;
+}
+
 /* color for selected rows and tables */
 
 .selectedRow, .selectedRow:active, .childgrid .draggable_tr:active {
