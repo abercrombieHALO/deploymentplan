@@ -1,6 +1,48 @@
 # Deployment Plan Tool
 
+## Table of Contents
+
+<details>
+  <summary><b>Expand to show Table of Contents</b></summary>
+
+<!-- toc -->
+
+- [Introduction](#introduction)
+  * [Browser support](#browser-support)
+- [Underlying Data Format](#underlying-data-format)
+  * [Staff to Section](#staff-to-section---staff_to_section)
+  * [Section to Task](#section-to-task---section_to_task)
+  * [Changes Tables](#changes-tables)
+  * [Formatting](#formatting)
+- [Functionality](#functionality)
+  * [Location-level](#location-level)
+  * [Task-level](#task-level)
+  	+ [Rename a task](#rename-a-task)
+  * [Section-level](#section-level)
+  	+ [Move sections around](#move-sections-around) 
+  	+ [Change the donor for a section](#change-the-donor-for-a-section) 
+  * [Person-level](#person-level)
+  	+ [Move people around](#move-people-around) 
+  	+ [Change positions](#change-positions)
+- [Saving, Printing & Exporting](#saving-printing--exporting)
+  * [Save](#save)
+  * [Print](#print)
+  * [Export to PDF](#export-to-pdf)
+
+<!-- tocstop -->
+
+</details>
+
 ## Introduction
+
+This is a tool to help plan & communicate deployment of teams. The aim is to be able to quickly and easily:
+
+1. Assign staff to teams
+1. Assign teams to tasks/activities
+1. Assign donors to teams
+1. Highlight and keep a record of changes from previous version of the deployment plan
+
+The input data for the tool is stored as lists in an Excel file. 
 
 ### Browser support
 
@@ -63,7 +105,7 @@ Column names must not contain any spaces.
     <li>Do not delete any rows in the sheets. If you want to clear changes, open the file in the tool and press the "Clear changes" button</li>
 </ul>
 
-### Formatting setup
+### Formatting
 
 ## Functionality
 
@@ -91,4 +133,4 @@ Column names must not contain any spaces.
 
 ### Print
 
-### Export
+### Export to PDF
