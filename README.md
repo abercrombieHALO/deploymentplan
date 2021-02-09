@@ -137,14 +137,16 @@ This sheet serves two optional functions:
 1. Define format (background color and font color) to be applied to donors and positions e.g. PMWRA should have a blue background and white font, section commanders should be light green etc.
 2. Define the sort order of positions within a section e.g. Section Commanders appear above Medic Deminers, Medic Deminers above Deminers, etc.
 
+![Screenshot of `formatting` and results on deployment plan](/assets/formatting.jpg)
+
 #### Colors
-Any colour that is recognised in CSS can be entered in the `background-color` and `text-color` columns. The different ways of specifying the colours are listed in the table below. If a colour is not specified (i.e. the cell is left blank) then the default colours will be used (background: white, text: black).
+Any colour that is recognised in CSS can be entered in the `background-color` and `text-color` columns. Some common ways of specifying the colours are listed in the table below (see [here](https://www.w3schools.com/colors/default.asp) for a full rundown. If a colour is not specified (i.e. the cell is left blank) then the default colours will be used (background: white, text: black).
 
 | Colour type | Examples | Reference Link |
 | --- | --- | --- |
-| CSS color keyword | <span style="background-color: BlanchedAlmond">`BlanchedAlmond`</span><br><span style="background-color: DarkOliveGreen">`DarkOliveGreen`</span><br><span style="background-color: Cyan">`Cyan`</span> | [W3 Schools](https://www.w3schools.com/colors/colors_names.asp) |
-| Hex code | <span style="background-color: #ef4036">`#ef4036`</span><br><span style="background-color: #062135; color: white">`#062135`</span> | [Missing Link]() |
-| RGB | <span style="background-color: rgb(0, 25, 250)">`rgb(0, 25, 250)`</span><br><span style="background-color: rgb(170, 20, 200)">`rgb(170, 20, 200)`</span><br><span style="background-color: rgb(250, 250, 20)">`rgb(250, 250, 20)`</span> | [Missing Link]() |
+| HTML color name | <span style="background-color: BlanchedAlmond">`BlanchedAlmond`</span><br><span style="background-color: DarkOliveGreen">`DarkOliveGreen`</span><br><span style="background-color: Cyan">`Cyan`</span> | [W3 HTML Color Names](https://www.w3schools.com/colors/colors_names.asp) |
+| Hex code | <span style="background-color: #ef4036">`#ef4036`</span><br><span style="background-color: #062135; color: white">`#062135`</span> | [W3 Hex Calculator](https://www.w3schools.com/colors/colors_hexadecimal.asp) |
+| RGB | <span style="background-color: rgb(0, 25, 250)">`rgb(0, 25, 250)`</span><br><span style="background-color: rgb(170, 20, 200)">`rgb(170, 20, 200)`</span><br><span style="background-color: rgb(250, 250, 20)">`rgb(250, 250, 20)`</span> | [RGB Calculator](https://www.w3schools.com/colors/colors_rgb.asp) |
 
 ### Position sort order
 The order that positions are displayed on the deployment plan will exactly match the order that positions appear on the `formatting` sheet. Any positions that are missing from the `formatting` sheet will be sorted to the bottom by default on the deployment plan.
