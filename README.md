@@ -8,6 +8,7 @@
 <!-- toc -->
 
 - [Introduction](#introduction)
+  * [General process](#general-process)
   * [Browser support](#browser-support)
 - [Underlying Data Format](#underlying-data-format)
   * [Staff to Section](#staff-to-section---staff_to_section)
@@ -35,14 +36,27 @@
 
 ## Introduction
 
-This is a tool to help plan & communicate deployment of teams. The aim is to be able to quickly and easily:
+This is a tool to help plan the deployment of teams. The aim is to be able to quickly and easily:
 
 1. Assign staff to teams
-1. Assign teams to tasks/activities
-1. Assign donors to teams
-1. Highlight and keep a record of changes from previous version of the deployment plan
+2. Assign teams to tasks/activities
+3. Assign donors to teams
+4. Highlight and keep a record of changes from previous version of the deployment plan
+5. Export a PDF or print the deployment plan
 
-The input data for the tool is stored as lists in an Excel file. 
+The data used by the tool is stored as lists in an Excel file. Before using the tool for the first time, you will need to fill in a blank version of the spreadsheet with your programme's data - staff, sections, tasks etc.
+
+## General process
+
+The general process for using the tool is:
+
+1. Load in a previous version of your deployment plan (an excel file)
+	* Any changes made for the previous plan will be highlighted in yellow.
+	* To start afresh, press the "clear changes" button.
+2. Update the deployment plan according to your needs
+	* Any changes will be recorded in the changes tables at the bottom of the page
+3. Save the new deployment plan (as an excel file)
+4. Export/print the new deployment plan (if desired)
 
 ### Browser support
 
@@ -50,7 +64,18 @@ Definitely won't work in Microsoft Edge. For best results, use Google Chrome.
 
 ## Underlying Data Format
 
+There are 6 sheets in the excel file:
+
+1. [`staff_to_section`](#staff-to-section---staff_to_section)
+2. [`section_to_task`](#section-to-task---section_to_task)
+3. [`personnel_changes`](#changes-tables)
+4. [`position_changes`](#changes-tables)
+5. [`donor_changes`](#changes-tables)
+6. [`formatting`](#formatting)
+
 ### Staff to Section - `staff_to_section`
+
+This is a list of all staff (identified by insurance number), along with their positions and the section that they are assigned to. Optionally, it can also include columns of other staff information that you wish to show on the deployment plan (e.g. name, training etc).
 
 #### Mandatory Columns
 
@@ -62,7 +87,7 @@ Definitely won't work in Microsoft Edge. For best results, use Google Chrome.
 
 #### Optional Columns
 
-Any more columns of information about personnel that would be helpful to show on the deployment plan. Data in these columns will not be editable from within the deployment plan, but can always be edited within the spreadsheet.
+Any additional columns of information about personnel that would be helpful to show on the deployment plan. Data in these columns will not be editable from within the deployment plan, but can always be edited within the spreadsheet itself.
 
 Column names must not contain any spaces.
 
@@ -76,6 +101,8 @@ Column names must not contain any spaces.
 
 ### Section to Task - `section_to_task`
 
+This is a list of all sections, along with the task that they are assigned to, and the "location" to which that task belongs (in the HALO sense of "location"). Optionally, it can also include a column indicating the donor assigned to that section.
+
 #### Mandatory Columns
 | Column   | Description | Examples |
 | ---     | --- | --- |
@@ -85,7 +112,6 @@ Column names must not contain any spaces.
 
 #### Optional Columns
 
-##### Special Optional Columns
 | Column  | Description | Examples |
 | ---     | --- | --- |
 | `donor` | <ul><li>Donor allocation for each section.</li><li>Ideally use cost centres (e.g. `N61`) instead of donor (e.g. `DFID`) - helps with multi-contract donors.</li><li>Do not start with a number.</li><li>CSS classes will be formed by removing anything after the first whitespace, and converting to lower-case - e.g. `N82 (UNMAS)` will be turned into `.n82`</li></ul> | `N82 (UNMAS FAL)`<br>`N82`<br>`DFID`<br> |
@@ -107,30 +133,94 @@ Column names must not contain any spaces.
 
 ### Formatting
 
+This sheet serves two optional functions:
+1. Define format (background color and font color) to be applied to donors and positions e.g. PMWRA should have a blue background and white font, section commanders should be light green etc.
+2. Define the sort order of positions within a section e.g. Section Commanders appear above Medic Deminers, Medic Deminers above Deminers, etc.
+
+#### Colors
+Any colour that is recognised in CSS can be entered in the `background-color` and `text-color` columns. The different ways of specifying the colours are listed in the table below. If a colour is not specified (i.e. the cell is left blank) then the default colours will be used (background: white, text: black).
+
+| Colour type | Examples | Reference Link |
+| --- | --- | --- |
+| CSS color keyword | <span style="background-color: BlanchedAlmond">`BlanchedAlmond`</span><br><span style="background-color: DarkOliveGreen">`DarkOliveGreen`</span><br><span style="background-color: Cyan">`Cyan`</span> | [W3 Schools](https://www.w3schools.com/colors/colors_names.asp) |
+| Hex code | <span style="background-color: #ef4036">`#ef4036`</span><br><span style="background-color: #062135; color: white">`#062135`</span> | [Missing Link]() |
+| RGB | <span style="background-color: rgb(0, 25, 250)">`rgb(0, 25, 250)`</span><br><span style="background-color: rgb(170, 20, 200)">`rgb(170, 20, 200)`</span><br><span style="background-color: rgb(250, 250, 20)">`rgb(250, 250, 20)`</span> | [Missing Link]() |
+
+### Position sort order
+The order that positions are displayed on the deployment plan will exactly match the order that positions appear on the `formatting` sheet. Any positions that are missing from the `formatting` sheet will be sorted to the bottom by default on the deployment plan.
+
 ## Functionality
 
 ### Location-level
 
+#### Add/remove/rename a location
+
+Edit in the `section_to_task` sheet of the Excel file.
+
 ### Task-level
+
+#### Add or remove a task
+
+* To remove a task and all the sections within it, delete the corresponding rows in the Excel file.
+* To remove a task but keep all of the sections, rename the task (to wherever the sections have now gone) - see below.
+* To add a new task and move some sections into it, edit the `task` column of the cooresponding rows in the excel file.
+	* Note: it is not currently possible to add a new task and leave it empty (e.g. no sections).
 
 #### Rename a task
 
+Click on the task name in the deployment plan, and type.
+
 ### Section-level
 
-#### Move sections around
+#### Add a new section
+
+Add a new row for the section to the `section_to_task` sheet of the excel file, making sure to  also include the task and location.
+
+#### Move section(s) to a new task
+
+* Click on a section name to select the section. The section name will be highlighted in pink.
+* Click on multiple section names to select more than one at a time.
+* Click and drag the section(s) to their new task.
+* Any sections that have been moved will be highlighted in yellow, and the move will be recorded in the "Personnel changes" table at the bottom of the page.
 
 #### Change the donor for a section
 
+* Click on the donor name, and type.
+* Any changed donors will be highlighted with a yellow border, and the change will be recorded in the "Donor changes" table at the bottom of the page, and reflected in the "Donors > Summary" and "Donors > By Section" tables.
+
 ### Person-level
 
-#### Move people around
+#### Add or remove a person
+
+* To add a new person, add a new row to the `staff_to_section` sheet of the Excel file, making sure to fill in their insurance number and section, as well as any optional columns.
+* To delete a person, delete the corresponding row in the `staff_to_section` sheet of the Excel file.
+
+#### Move a person/people to a new section
+
+* Click on a person to select them. The person will be highlighted in grey.
+* Click on multiple people to select more than one at a time.
+* Click and drag the person/people to their new section.
+* Any people that have been moved will be highlighted in yellow, and the move will be recorded in the "Personnel changes" table at the bottom of the page.
 
 #### Change positions
+
+* Click on the position of the person, and type.
+* Any changed positions will be highlighted with yellow font, and the change will be recorded in the "Position Changes" table at the bottom of the page.
 
 ## Saving, Printing & Exporting
 
 ### Save
 
+Enter a name for the file in the "Save as:" text box, then press the "Save" button. This will output a new Excel file in your "Downloads" folder.
+
+Note: on some systems, pressing "Save" may open a file dialog where you can choose where to save your file.
+
 ### Print
 
+Press the "Print/Export as PDF" button. This will open a print dialog. Each location should on its own page, and scaled so that all sections fit on the page.
+
+Note: for some large programmes/locations, there is no easy way to automatically format a page to properly show all the sections at a readable size. Sorry. One solution might be to reorganise your deployment plan with smaller "locations" - e.g. split "Muhamalai" into "Muhamalai - East", "Muhamalai - West" etc.
+
 ### Export to PDF
+
+Same as Print instructions above, but change "Destination"/"Printer" to "Save as PDF".
