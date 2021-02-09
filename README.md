@@ -77,6 +77,8 @@ There are 6 sheets in the excel file:
 
 This is a list of all staff (identified by insurance number), along with their positions and the section that they are assigned to. Optionally, it can also include columns of other staff information that you wish to show on the deployment plan (e.g. name, training etc).
 
+![Screenshot of `staff_to_section`](/assets/staff_to_section.jpg)
+
 #### Mandatory Columns
 
 | Column   | Description | Examples |
@@ -102,6 +104,8 @@ Column names must not contain any spaces.
 ### Section to Task - `section_to_task`
 
 This is a list of all sections, along with the task that they are assigned to, and the "location" to which that task belongs (in the HALO sense of "location"). Optionally, it can also include a column indicating the donor assigned to that section.
+
+![Screenshot of `section_to_task`](/assets/section_to_task.jpg)
 
 #### Mandatory Columns
 | Column   | Description | Examples |
