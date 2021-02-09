@@ -11,6 +11,7 @@
   * [General process](#general-process)
   * [Browser support](#browser-support)
 - [Underlying Data Format](#underlying-data-format)
+  * [Excel template & example](#excel-template-example)
   * [Staff to Section](#staff-to-section---staff_to_section)
   * [Section to Task](#section-to-task---section_to_task)
   * [Changes Tables](#change-tables)
@@ -74,10 +75,16 @@ There are 6 sheets in the excel file:
 
 1. [`staff_to_section`](#staff-to-section---staff_to_section)
 2. [`section_to_task`](#section-to-task---section_to_task)
-3. [`personnel_changes`](#changes-tables)
-4. [`position_changes`](#changes-tables)
-5. [`donor_changes`](#changes-tables)
+3. [`personnel_changes`](#change-tables)
+4. [`position_changes`](#change-tables)
+5. [`donor_changes`](#change-tables)
 6. [`formatting`](#formatting)
+
+### Excel template & Example
+
+Blank template: [Blank Excel file](/assets/team_list_BLANK.xlsx)
+
+Example data: [Example Excel file](/assets/team_list_EXAMPLE.xlsx)
 
 ### Staff to Section - `staff_to_section`
 
@@ -137,8 +144,8 @@ This is a list of all sections, along with the task that they are assigned to, a
         </ul>
     </li>
     <li>Any changes recorded in these sheets will be highlighted in yellow when you load the file into the tool.</li>
-    <li>Do not change the format of the sheets.</li>
-    <li>Do not delete any rows in the sheets. If you want to clear changes, open the file in the tool and press the "Clear changes" button</li>
+    <li>Do not change the format of the sheets or delete the headers.</li>
+    <li>Do not delete any rows in the sheets. If you want to clear changes, open the file in the tool and press the "Clear changes" button instead.</li>
 </ul>
 
 ### Formatting
