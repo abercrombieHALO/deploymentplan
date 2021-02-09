@@ -1,4 +1,6 @@
-# Deployment Plan Tool
+# Deployment Planning Tool
+
+## [Link to Tool](https://abercrombiehalo.github.io/deploymentplan/)
 
 ## Table of Contents
 
