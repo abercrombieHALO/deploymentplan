@@ -82,9 +82,9 @@ There are 6 sheets in the excel file:
 
 ### Excel template & Example
 
-Blank template: [Blank Excel file](/assets/team_list_BLANK.xlsx)
+Blank template: [Blank Excel file](/assets/team_list_BLANK.xlsx?raw=true)
 
-Example data: [Example Excel file](/assets/team_list_EXAMPLE.xlsx)
+Example data: [Example Excel file](/assets/team_list_EXAMPLE.xlsx?raw=true)
 
 ### Staff to Section - `staff_to_section`
 
