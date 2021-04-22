@@ -106,7 +106,7 @@ function clearChanges() {
 	// remove class "changed" + "changeddonor"
 	$(".changed").removeClass("changed");
 	$(".changeddonor").removeClass("changeddonor");
-	$(".changeddonor").removeClass("changedpos");
+	$(".changedpos").removeClass("changedpos");
 	
 	// clear personnel changes table
 	$("#personnelchanges tbody tr").slice(2).remove();
