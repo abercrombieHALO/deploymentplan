@@ -455,7 +455,10 @@ function parseInputFile(inputElement) {
 					};
 				});
 			});
-						
+			
+			// make reason column contenteditable
+			$("#poschanges td.reason").attr("contenteditable", true);
+			
 			// convert to json, loop through section names and update relevant donor with class "changeddonor"
 			var poschanges_json = XLSX.utils.sheet_to_json(poschanges_sheet);
 			for(row of poschanges_json) {
