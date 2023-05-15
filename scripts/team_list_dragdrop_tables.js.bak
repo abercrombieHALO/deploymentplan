@@ -59,8 +59,8 @@ function draggable_tables() {
 		var locName = $(this).closest('.location').find('h1').text();
 		
 		var dragTable = $(this).closest(".draggable_section").clone()
-			.append($("<td />").addClass("fromtask hidden").text(taskName))
-			.append($("<td />").addClass("fromloc hidden").text(locName))
+			.append($("<td />").addClass("fromtask").text(taskName))
+			.append($("<td />").addClass("fromloc").text(locName))
 		//dragTable.find(".selectedSection").removeClass("selectedSection");
 		container.append(dragTable);
 	});
@@ -126,8 +126,8 @@ function droppable_tasktables(event, ui) {
 				var fromSec = $(this).find(".sectionname_name").text();
 				$("#personnelchanges tbody").append($("<tr />")
 					.append($("<td />").addClass("ins").text(fromSec).attr("colspan", "2"))
-					.append($(this).children(".fromloc").removeClass("hidden"))
-					.append($(this).children(".fromtask").removeClass("hidden"))
+					.append($(this).children(".fromloc"))
+					.append($(this).children(".fromtask"))
 					.append($("<td />").addClass("fromsec"))
 					.append($("<td />").addClass("toloc").text(toLoc))
 					.append($("<td />").addClass("totask").text(toTask))
