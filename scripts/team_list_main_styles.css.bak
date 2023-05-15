@@ -149,7 +149,7 @@ td.changeddonor {
 /* color for selected rows and tables */
 
 .selectedRow, .selectedRow:active, .childgrid .draggable_tr:active {
-  background-color: HotPink;
+  background-color: #E7E7E7;
   cursor: move;
 }
 
