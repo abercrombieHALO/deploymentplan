@@ -106,10 +106,6 @@ td.donor, td.donor:active {
   /*display: inline-block;*/
 }
 
-.fromsec, .fromloc, .fromtask {
-	visibility: hidden;
-}
-
 .childgrid tr {
 	cursor: pointer;
 }
@@ -160,4 +156,8 @@ td.changeddonor {
 .selectedSection, .selectedSection:active, .sectionname:active {
   background-color: HotPink;
   cursor: move;
+}
+
+.fromsec, .fromloc, .fromtask {
+	visibility: hidden;
 }

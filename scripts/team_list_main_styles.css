@@ -159,5 +159,5 @@ td.changeddonor {
 }
 
 .fromsec, .fromloc, .fromtask {
-	visibility: hidden;
+	display: none;
 }
