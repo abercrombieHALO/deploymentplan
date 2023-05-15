@@ -13,6 +13,7 @@ $(".tasktable .childgrid tr").not(".section_th").draggable({
 
 // make section tables droppable
 $(".tasktable .childgrid").droppable({
+	tolerance: "pointer",
     accept: ".draggable_tr",
 	drop: droppable_tables
 });
