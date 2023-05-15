@@ -106,6 +106,10 @@ td.donor, td.donor:active {
   /*display: inline-block;*/
 }
 
+.fromsec, .fromloc, .fromtask {
+	visibility: hidden;
+}
+
 .childgrid tr {
 	cursor: pointer;
 }
