@@ -7,7 +7,8 @@ $("tr.sectionname").draggable({
 
 // droppable
 $("div.tasktable > table").droppable({
-    accept: ".draggable_section",
+	tolerance: "pointer",
+	accept: ".draggable_section",
 	drop: droppable_tasktables
 });
 
