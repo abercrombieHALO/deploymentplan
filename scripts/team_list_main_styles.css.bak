@@ -116,7 +116,7 @@ td.donor, td.donor:active {
 }
 
 .changed {
-  background-color: yellow;
+  background-color: Fuchsia;
 }
 
 .pos {
@@ -124,11 +124,11 @@ td.donor, td.donor:active {
 }
 
 td.changedpos {
-	color: yellow;
+	color: Fuchsia;
 }
 
 td.changeddonor {
-  border: 1px solid yellow;
+  border: 1px solid Fuchsia;
 }
 
 /* Donor tables */
