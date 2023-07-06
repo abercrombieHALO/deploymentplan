@@ -32,7 +32,7 @@ function writeOutputFile() {
 		sts_headers = sts_headers.slice(1, sts_headers.length);
 		
 		// populate data arrays of arrays to be written to workbook
-		var stt_data = [["team", "task", "location", "donor"]];
+		var stt_data = [["section", "task", "location", "donor"]];
 		var sts_data = [];
 		
 		$(".location").each(function() {
@@ -62,7 +62,7 @@ function writeOutputFile() {
 						
 						if (sts_data.length == 0) {
 							// if this is the first row, add headers
-							sts_data.push(["team"].concat(ws[0]))
+							sts_data.push(["section"].concat(ws[0]))
 						}
 						
 						// remove header row

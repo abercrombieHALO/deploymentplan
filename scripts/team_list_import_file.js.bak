@@ -178,6 +178,7 @@ function parseInputFile(inputElement) {
 		
 		// make sure all section tables are droppable
 		$(".tasktable .childgrid").droppable({
+			tolerance: "pointer",
 			accept: ".draggable_tr",
 			drop: droppable_tables
 		});
@@ -189,6 +190,7 @@ function parseInputFile(inputElement) {
 		
 		// make sure all team tables are droppable
 		$("div.tasktable > table").droppable({
+			tolerance: "pointer",
 			accept: ".sectionname",
 			drop: droppable_tasktables
 		});
