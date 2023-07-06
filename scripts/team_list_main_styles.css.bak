@@ -158,7 +158,7 @@ td.changeddonor {
   cursor: move;
 }
 
-.fromsec, .fromloc, .fromtask {
+.hidden {
 	visibility: hidden;
 	border: none;
 }
