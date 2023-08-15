@@ -151,7 +151,7 @@ function exportExcelFile() {
 					donor = $(this).find(".donor").text();
 				};
 				
-				sts_data.push([section, task]);
+				sts_data.push([section, donor]);
 				
 				// loop through the section tables to get staff data
 				$(this).find(".childgrid").each(function(index) {
@@ -159,18 +159,16 @@ function exportExcelFile() {
 					var ws = XLSX.utils.table_to_sheet($(this)[0]);
 					//ws = XLSX.utils.sheet_to_json(ws, {header:1});
 					ws = XLSX.utils.sheet_to_json(ws);
-					
+					sts_data.push(ws);
 				});
 			});
 			
 		});
 	});
 
-	stt_sheet = XLSX.utils.aoa_to_sheet(stt_data);
 	sts_sheet = XLSX.utils.aoa_to_sheet(sts_data);
 	
 	const workbook = XLSX.utils.book_new()
-	XLSX.utils.book_append_sheet(workbook, stt_sheet, "section_to_task");
 	XLSX.utils.book_append_sheet(workbook, sts_sheet, "staff_to_section");
 	
 	XLSX.utils.book_append_sheet(workbook, XLSX.utils.table_to_sheet($("#personnelchanges")[0]), "personnel_changes");
