@@ -160,7 +160,7 @@ function exportExcelFile() {
 					//ws = XLSX.utils.sheet_to_json(ws, {header:1});
 					ws = XLSX.utils.sheet_to_json(ws);
 					for(row of ws) {
-						sts_data.push(ws);
+						sts_data.push(row);
 					};
 				});
 			});
