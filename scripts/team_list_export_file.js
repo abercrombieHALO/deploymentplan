@@ -121,14 +121,6 @@ function exportExcelFile() {
 	}
 	
 	// process the team lists
-		
-	// get staff_to_section sheet from workbook
-	var sts_sheet = workbook.Sheets['staff_to_section'];
-	var sts = XLSX.utils.sheet_to_json(sts_sheet);
-	
-	// get header row of staff_to_section sheet and remove "section" from index 0;
-	var sts_headers = XLSX.utils.sheet_to_json(sts_sheet, {header: 1})[0];
-	sts_headers = sts_headers.slice(1, sts_headers.length);
 	
 	// populate data arrays of arrays to be written to workbook
 	var sts_data = [];

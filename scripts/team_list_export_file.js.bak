@@ -102,6 +102,92 @@ function writeOutputFile() {
 }
 }
 
+function exportExcelFile() {
+	
+	// get output filename from "Save as:" form box with id outputFilename
+	var outputFilename = $("#outputFilename").val();
+	// if it's empty, use the input file name instead
+	if (outputFilename == "") {
+		outputFilename = $("#controls input:first").val().replace("C:\\fakepath\\", "");
+	}
+	// prepend with EXCEL_
+	outputFilename = "EXCEL_"+outputFilename;
+	// if it doesn't end with .xlsx, end it with that instead
+	if (!(outputFilename.endsWith(".xlsx"))) {
+		// remove any preexisting file extensions
+		outputFilename = outputFilename.replace(/\.[^/.]+$/, "");
+		// add .xlsx to the end
+		outputFilename = outputFilename + ".xlsx";
+	}
+	
+	// process the team lists
+		
+	// get staff_to_section sheet from workbook
+	var sts_sheet = workbook.Sheets['staff_to_section'];
+	var sts = XLSX.utils.sheet_to_json(sts_sheet);
+	
+	// get header row of staff_to_section sheet and remove "section" from index 0;
+	var sts_headers = XLSX.utils.sheet_to_json(sts_sheet, {header: 1})[0];
+	sts_headers = sts_headers.slice(1, sts_headers.length);
+	
+	// populate data arrays of arrays to be written to workbook
+	var sts_data = [];
+	
+	// loop through the location divs
+	$(".location").each(function() {
+		
+		// get the location name
+		var loc = $(this).children("h1").text();
+		sts_data.push([loc]);
+		
+		// loop through the task table divs
+		$(this).children("div").children().each(function() {
+			
+			// get the task name
+			var task = $(this).find("> table > thead > tr > th").text();
+			sts_data.push([task]);
+			
+			// loop through the section names
+			$(this).find("table.section").each(function() {
+				
+				// get the section name
+				var section = $(this).find("tr.sectionname td").first().text();
+				var donor = "";
+				
+				// get the donor name
+				if($(this).find("tr.sectionname td").length > 1) {
+					donor = $(this).find(".donor").text();
+				};
+				
+				sts_data.push([section, task]);
+				
+				// loop through the section tables to get staff data
+				$(this).find(".childgrid").each(function(index) {
+					
+					var ws = XLSX.utils.table_to_sheet($(this)[0]);
+					//ws = XLSX.utils.sheet_to_json(ws, {header:1});
+					ws = XLSX.utils.sheet_to_json(ws);
+					
+				});
+			});
+			
+		});
+	});
+
+	stt_sheet = XLSX.utils.aoa_to_sheet(stt_data);
+	sts_sheet = XLSX.utils.aoa_to_sheet(sts_data);
+	
+	const workbook = XLSX.utils.book_new()
+	XLSX.utils.book_append_sheet(workbook, stt_sheet, "section_to_task");
+	XLSX.utils.book_append_sheet(workbook, sts_sheet, "staff_to_section");
+	
+	XLSX.utils.book_append_sheet(workbook, XLSX.utils.table_to_sheet($("#personnelchanges")[0]), "personnel_changes");
+	XLSX.utils.book_append_sheet(workbook, XLSX.utils.table_to_sheet($("#donorchanges")[0]), "donor_changes");
+	XLSX.utils.book_append_sheet(workbook, XLSX.utils.table_to_sheet($("#poschanges")[0]), "pos_changes");
+	
+	XLSX.writeFile(workbook, outputFilename);
+}
+
 function clearChanges() {
 	// remove class "changed" + "changeddonor"
 	$(".changed").removeClass("changed");
