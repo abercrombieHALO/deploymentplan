@@ -159,9 +159,7 @@ function exportExcelFile() {
 					var ws = XLSX.utils.table_to_sheet($(this)[0]);
 					//ws = XLSX.utils.sheet_to_json(ws, {header:1});
 					ws = XLSX.utils.sheet_to_json(ws);
-					for(row of ws) {
-						sts_data.push(row);
-					};
+					sts_data = sts_data.concat(ws);
 				});
 			});
 			

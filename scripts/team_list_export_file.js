@@ -125,19 +125,24 @@ function exportExcelFile() {
 	// populate data arrays of arrays to be written to workbook
 	var sts_data = [];
 	
+	var loc_emph = "====================";
+	var task_emph = "------------";
+	
 	// loop through the location divs
 	$(".location").each(function() {
 		
 		// get the location name
-		var loc = $(this).children("h1").text();
-		sts_data.push([loc]);
+		var loc = $(this).children("h1").text().toUpperCase();
+		sts_data.push([loc_emph+" "+loc+" "+loc_emph]);
+		sts_data.push([]);
 		
 		// loop through the task table divs
 		$(this).children("div").children().each(function() {
 			
 			// get the task name
 			var task = $(this).find("> table > thead > tr > th").text();
-			sts_data.push([task]);
+			sts_data.push([task_emph+" "+task+" "+task_emph]);
+			sts_data.push([""]);
 			
 			// loop through the section names
 			$(this).find("table.section").each(function() {
@@ -157,9 +162,9 @@ function exportExcelFile() {
 				$(this).find(".childgrid").each(function(index) {
 					
 					var ws = XLSX.utils.table_to_sheet($(this)[0]);
-					//ws = XLSX.utils.sheet_to_json(ws, {header:1});
-					ws = XLSX.utils.sheet_to_json(ws);
+					ws = XLSX.utils.sheet_to_json(ws, {header:1});
 					sts_data = sts_data.concat(ws);
+					sts_data.push([""]);
 				});
 			});
 			
