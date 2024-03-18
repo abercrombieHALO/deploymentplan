@@ -11,6 +11,7 @@
 
 <link rel="stylesheet" href="scripts/team_list_main_styles.css">
 <link rel="stylesheet" href="scripts/team_list_print_styles.css" media="print">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
 </head>
 <body>
@@ -22,8 +23,9 @@
 	<input class="export spaceControl" type="button" value="Clear changes" onclick="clearChanges()">
 	<label class="export spaceControl">Save as:</label>
 	<input class="export" type="text" id="outputFilename">
-	<input class="export" type="button" value="Save" onclick="writeOutputFile()">
+	<input class="export" type="button" value="Save Data File" onclick="writeOutputFile()">
 	<input class="export" type="button" value="Print/Export as PDF" onclick="printPage()">
+	<input class="export" type="button" value="Export Excel Version" onclick="exportExcelFile()">
 	</form>
 </div>
 <hr>
