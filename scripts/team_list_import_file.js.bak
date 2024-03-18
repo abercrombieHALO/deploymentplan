@@ -64,7 +64,7 @@ function parseInputFile(inputElement) {
 				locations[newLocation][newTask] = [];
 			};
 			// add the section to the task dict
-			var sectionName = stt[i]['section'];
+			var sectionName = stt[i]['team'];
 				// get other details to be displayed:
 			var newDonor = "";
 			if (Object.keys(stt[i]).includes('donor')) {
@@ -86,7 +86,7 @@ function parseInputFile(inputElement) {
 		
 		sts_by_section = {}
 		for (row of sts) {
-			var section = row['section'];
+			var section = row['team'];
 			if(!Object.keys(sts_by_section).includes(section)) {
 				sts_by_section[section] = [];
 			}
@@ -300,7 +300,7 @@ function parseInputFile(inputElement) {
 				$("#donorcounts .totals").append($("<td />").text(allocationCounts[secType]["Total"]));
 			}
 			
-			$("#donors").append($("<h2 />").text("By Section"))
+			$("#donors").append($("<h2 />").text("By Team"))
 				.append($("<div />").addClass("donorFlex"));
 			
 			// create table for each secType showing donor for each section
@@ -308,7 +308,7 @@ function parseInputFile(inputElement) {
 				var tableID = "ttod-"+secType.replace(/([^A-Z])/g,"");
 				$(".donorFlex").append($("<table />").attr("id", tableID).addClass("teamtodonor")
 					.append($("<tr />")
-						.append($("<td />").text("Section"))
+						.append($("<td />").text("Team"))
 						.append($("<td />").text("Donor"))
 					)
 				);
@@ -424,7 +424,7 @@ function parseInputFile(inputElement) {
 		}
 		else {
 			// add empty changes table
-			$("#changes").append("<table id='personnelchanges'><tbody><tr><td rowspan='2'>ins</td><td rowspan='2'>pos</td><td colspan='3'>From</td><td colspan='3'>To</td><td rowspan='2'>Reason</td></tr><tr><td>Location</td><td>Task</td><td>Section</td><td>Location</td><td>Task</td><td>Section</td></tr></tbody></table>");
+			$("#changes").append("<table id='personnelchanges'><tbody><tr><td rowspan='2'>ins</td><td rowspan='2'>pos</td><td colspan='3'>From</td><td colspan='3'>To</td><td rowspan='2'>Reason</td></tr><tr><td>Location</td><td>Task</td><td>Team</td><td>Location</td><td>Task</td><td>Team</td></tr></tbody></table>");
 		}
 		
 		// POSITION CHANGES TABLE
@@ -508,14 +508,14 @@ function parseInputFile(inputElement) {
 			// convert to json, loop through section names and update relevant donor with class "changeddonor"
 			var donorchanges_json = XLSX.utils.sheet_to_json(donorchanges_sheet);
 			for(row of donorchanges_json) {
-				var sec = row['section'].toString();
+				var sec = row['team'].toString();
 				var changed = $(".sectionname_name").filter(function() { return ($(this).text() === sec) } );
 				changed.siblings(".donor").addClass("changeddonor");
 			}
 		}
 		else {
 			// add empty changes table
-			$("#changes").append("<table id='donorchanges'><tbody><tr><td>section</td><td>from</td><td>to</td></tr></tbody></table>");
+			$("#changes").append("<table id='donorchanges'><tbody><tr><td>team</td><td>from</td><td>to</td></tr></tbody></table>");
 		}		
 				
 		

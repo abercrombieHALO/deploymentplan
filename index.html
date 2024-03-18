@@ -20,13 +20,13 @@ html {overflow-x:auto !important;}
 
 <div class="w3-sidebar w3-light-grey w3-card-4 w3-animate-right" style="display:none;width:15%;right:0" id="mySidebar">
 	<div class="w3-bar w3-dark-grey">
-		<span class="w3-bar-item w3-padding-16">Training</span>
+		<span class="w3-bar-item w3-padding-16">Qualifications</span>
 		<button onclick="w3_close()" class="w3-bar-item w3-button w3-right w3-padding-16" title="close Sidebar">&times;</button>
 	</div>
 	<div class="w3-container w3-grey">
 		<h4 id="sidebarTitle">Ins </h4>
 	</div>
-	<table class="w3-table-all w3-margin-top" id="trainingTable">
+	<!--<table class="w3-table-all w3-margin-top" id="qualificationsTable">
 		<tr>
 			<th style="width:30%;">Ins</th>
 			<th style="width:30%;">Cat</th>
@@ -47,7 +47,7 @@ html {overflow-x:auto !important;}
 			<td>Gang</td>
 			<td>Ster</td>
 		</tr>
-	</table>
+	</table>-->
 	<div class="w3-panel w3-pale-red w3-border" id="noResultsPanel">
 		<p>No training records for this insurance number.</p>
 	</div>
@@ -86,7 +86,7 @@ $(document).on('contextmenu', '.ins', function(ev){
 	var filter, table, tr, td, i, n, panel;
 	n = 0;
 	filter = $(this).text();
-	table = document.getElementById("trainingTable");
+	table = document.getElementById("qualificationsTable");
 	tr = table.getElementsByTagName("tr");
 	for (i = 0; i < tr.length; i++) {
 		td = tr[i].getElementsByTagName("td")[0];
