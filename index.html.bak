@@ -48,6 +48,16 @@ html {overflow-x:auto !important;}
 <div id="changes">
 </div>
 
+<script>
+function w3_open() {
+  document.getElementById("mySidebar").style.display = "block";
+}
+
+function w3_close() {
+  document.getElementById("mySidebar").style.display = "none";
+}
+</script>
+
 <script src="scripts/team_list_dragdrop_rows.js"></script>
 <script src="scripts/team_list_dragdrop_tables.js"></script>
 <script src="scripts/team_list_editdetails.js"></script>
