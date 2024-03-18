@@ -22,8 +22,9 @@
 	<input class="export spaceControl" type="button" value="Clear changes" onclick="clearChanges()">
 	<label class="export spaceControl">Save as:</label>
 	<input class="export" type="text" id="outputFilename">
-	<input class="export" type="button" value="Save" onclick="writeOutputFile()">
+	<input class="export" type="button" value="Save Data File" onclick="writeOutputFile()">
 	<input class="export" type="button" value="Print/Export as PDF" onclick="printPage()">
+	<input class="export" type="button" value="Export Excel Version" onclick="exportExcelFile()">
 	</form>
 </div>
 <hr>
