@@ -24,7 +24,6 @@ html {overflow-x:auto !important;}
 	<a href="#" class="w3-bar-item w3-button">Link 2</a>
 	<a href="#" class="w3-bar-item w3-button">Link 3</a>
 </div>
-<button class="w3-button w3-teal w3-xlarge" onclick="w3_open()">☰</button>
 
 <h3 id="printTitle"></h3>
 <div id="controls">
@@ -49,8 +48,10 @@ html {overflow-x:auto !important;}
 </div>
 
 <script>
-function w3_open() {
+
+$(document).on('contextmenu', '.draggable_tr', function(ev){
   document.getElementById("mySidebar").style.display = "block";
+  return false;
 }
 
 function w3_close() {
