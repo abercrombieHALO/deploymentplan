@@ -516,7 +516,33 @@ function parseInputFile(inputElement) {
 		else {
 			// add empty changes table
 			$("#changes").append("<table id='donorchanges'><tbody><tr><td>team</td><td>from</td><td>to</td></tr></tbody></table>");
-		}		
+		}	
+
+		// QUALIFICATIONS TABLE
+		if (sheetNames.includes('qualifications')) {
+			var quals_sheet = workbook.Sheets['qualifications'];
+			
+			// convert to html table and insert inside #changes div
+			options = { "header": "", "footer": "", "id": "qualificationsTable"};
+			var quals_html = XLSX.utils.sheet_to_html(quals_sheet, options);
+			
+			$("#mySidebar").append(quals_html);
+			
+			// remove XLSX-generated attributes
+			$("#qualificationsTable").find("td")
+				.removeAttr('id')
+				.removeAttr('t')
+				.removeAttr('v');
+						
+			// add classes for table
+			$("#qualificationsTable").addClass("w3-table-all");
+			$("#qualificationsTable").addClass("w3-margin-top");
+
+						
+		}
+		else {
+			// add empty table?
+		}	
 				
 		
 	} else {

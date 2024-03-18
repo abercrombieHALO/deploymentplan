@@ -101,6 +101,9 @@ $(document).on('contextmenu', '.ins', function(ev){
 		}
 	}
 	
+	// hide the first column of the table (ins)
+	$('#qualificationsTable tr td:nth-child(1)').hide();
+	
 	// if no results, hide training table and display message
 	panel = document.getElementById("noResultsPanel");
 	if (n > 0) {

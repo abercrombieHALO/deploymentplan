@@ -537,8 +537,11 @@ function parseInputFile(inputElement) {
 			// add classes for table
 			$("#qualificationsTable").addClass("w3-table-all");
 			$("#qualificationsTable").addClass("w3-margin-top");
-			$("#qualificationsTable").addClass("w3-margin-left");
-			$("#qualificationsTable").addClass("w3-margin-right");
+			
+			// make the first row th
+			var firstTR = $("#qualificationsTable").find("tr:first").remove();
+			firstTR.find('td').contents().unwrap().wrap('<th>');
+			$('#qualificationsTable').prepend($('<tr></tr>').append(firstTR));
 						
 		}
 		else {
