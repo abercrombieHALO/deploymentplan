@@ -26,9 +26,31 @@ html {overflow-x:auto !important;}
 	<div class="w3-container w3-grey">
 		<h4 id="sidebarTitle">Ins </h4>
 	</div>
-	<a href="#" class="w3-bar-item w3-button">Link 1</a>
-	<a href="#" class="w3-bar-item w3-button">Link 2</a>
-	<a href="#" class="w3-bar-item w3-button">Link 3</a>
+	<table class="w3-table-all w3-margin-top" id="trainingTable">
+		<tr>
+			<th style="width:30%;">Ins</th>
+			<th style="width:30%;">Cat</th>
+			<th style="width:30%;">Trg</th>
+		</tr>
+		<tr>
+			<td>977</td>
+			<td>General</td>
+			<td>Dem</td>
+		</tr>
+		<tr>
+			<td>977</td>
+			<td>ICP</td>
+			<td>ICP</td>
+		</tr>
+		<tr>
+			<td>1481</td>
+			<td>Gang</td>
+			<td>Ster</td>
+		</tr>
+	</table>
+	<div class="w3-panel w3-pale-red w3-border" id="noResultsPanel">
+		<p>No training records for this insurance number.</p>
+	</div>
 </div>
 
 <h3 id="printTitle"></h3>
@@ -56,11 +78,41 @@ html {overflow-x:auto !important;}
 <script>
 
 $(document).on('contextmenu', '.ins', function(ev){
-  // update the sidebar title with insurance number
-  var sideBarTitle = $('#sidebarTitle').text().split(" ")[0];
-  $('#sidebarTitle').text() = sideBarTitle + " " + $(this).text();
-  // display the sidebar
-  document.getElementById("mySidebar").style.display = "block";
+	// update the sidebar title with insurance number
+	var sideBarTitle = $('#sidebarTitle').text().split(" ")[0];
+	$('#sidebarTitle').text(sideBarTitle + " " + $(this).text());
+  
+	// filter trainingTable based on insurance number
+	var filter, table, tr, td, i, n, panel;
+	n = 0
+	filter = $(this).text;
+	table = document.getElementById("trainingTable");
+	tr = table.getElementsByTagName("tr");
+	for (i = 0; i < tr.length; i++) {
+		td = tr[i].getElementsByTagName("td")[0];
+		if (td) {
+			txtValue = td.textContent || td.innerText;
+			if (txtValue.indexOf(filter) > -1) {
+				tr[i].style.display = "";
+				n += 1;
+			} else {
+				tr[i].style.display = "none";
+			}
+		}
+	}
+	
+	// if no results, hide training table and display message
+	panel = document.getElementById("noResultsPanel");
+	if (n > 0) {
+		table.style.display = "";
+		panel.style.display = "none";
+	}
+	else {
+		table.style.display = "none";
+		panel.style.display = "";
+	}
+	// display the sidebar
+	document.getElementById("mySidebar").style.display = "block";
   
   return false;
 })
