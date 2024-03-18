@@ -58,7 +58,7 @@ html {overflow-x:auto !important;}
 $(document).on('contextmenu', '.ins', function(ev){
   // update the sidebar title with insurance number
   var sideBarTitle = $('#sidebarTitle').text().split(" ")[0];
-  $('#sidebarTitle').text() = sideBarTitle + " " + $(this).text();
+  $('#sidebarTitle').text(sideBarTitle + " " + $(this).text());
   // display the sidebar
   document.getElementById("mySidebar").style.display = "block";
   
