@@ -545,7 +545,7 @@ function parseInputFile(inputElement) {
 						
 		}
 		else {
-			// add empty table?
+			$("#mySidebar").append("<table id='qualificationsTable'><tbody><tr><td></td></tr></tbody></table>");
 		}	
 				
 		

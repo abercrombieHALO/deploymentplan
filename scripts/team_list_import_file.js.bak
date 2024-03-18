@@ -541,7 +541,7 @@ function parseInputFile(inputElement) {
 			// make the first row th
 			var firstTR = $("#qualificationsTable").find("tr:first").remove();
 			firstTR.find('td').contents().unwrap().wrap('<th>');
-			$('#qualificationsTable').prepend($('<tr></tr>').append(firstTR));
+			$('#qualificationsTable').prepend(firstTR);
 						
 		}
 		else {

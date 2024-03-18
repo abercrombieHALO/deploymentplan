@@ -98,9 +98,6 @@ function writeOutputFile() {
 		// convert position changes to worksheet
 		workbook.Sheets['pos_changes'] = XLSX.utils.table_to_sheet($("#poschanges")[0]);
 		
-		// convert position changes to worksheet
-		workbook.Sheets['qualifications'] = XLSX.utils.table_to_sheet($("#qualificationsTable")[0]);
-		
 		XLSX.writeFile(workbook, outputFilename);
 }
 }
