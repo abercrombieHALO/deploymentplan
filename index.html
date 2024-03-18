@@ -84,8 +84,8 @@ $(document).on('contextmenu', '.ins', function(ev){
   
 	// filter trainingTable based on insurance number
 	var filter, table, tr, td, i, n, panel;
-	n = 0
-	filter = $(this).text;
+	n = 0;
+	filter = $(this).text();
 	table = document.getElementById("trainingTable");
 	tr = table.getElementsByTagName("tr");
 	for (i = 0; i < tr.length; i++) {

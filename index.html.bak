@@ -111,6 +111,7 @@ $(document).on('contextmenu', '.ins', function(ev){
 		table.style.display = "none";
 		panel.style.display = "";
 	}
+	
 	// display the sidebar
 	document.getElementById("mySidebar").style.display = "block";
   
