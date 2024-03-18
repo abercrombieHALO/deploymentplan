@@ -18,8 +18,12 @@ html {overflow-x:auto !important;}
 </head>
 <body>
 
-<div class="w3-sidebar w3-bar-block w3-border-right" style="display:none;right:0" id="mySidebar">
+<div class="w3-sidebar w3-bar-block w3-card w3-animate-right" style="display:none;right:0" id="mySidebar">
 	<button onclick="w3_close()" class="w3-bar-item w3-large">Close &times;</button>
+	<div class="w3-container w3-dark-grey">
+		<h4 id="sidebarTitle">Ins </h4>
+		<h5>Training Record</h5>
+	</div>
 	<a href="#" class="w3-bar-item w3-button">Link 1</a>
 	<a href="#" class="w3-bar-item w3-button">Link 2</a>
 	<a href="#" class="w3-bar-item w3-button">Link 3</a>
@@ -50,7 +54,11 @@ html {overflow-x:auto !important;}
 <script>
 
 $(document).on('contextmenu', '.ins', function(ev){
+  // update the sidebar title with insurance number
+  $('#sidebarTitle').append($(this).text());
+  // display the sidebar
   document.getElementById("mySidebar").style.display = "block";
+  
   return false;
 })
 
