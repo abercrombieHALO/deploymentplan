@@ -213,6 +213,6 @@ function printPage() {
 	var strDate = (new Date()).toLocaleDateString("en-GB", dateOptions);
 	title = title + " - Date exported: " + strDate;
 	$("#printTitle").text(title);
-	
+	$("#updateBar").hide();
 	window.print();
 }
